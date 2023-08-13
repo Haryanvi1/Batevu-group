@@ -2,57 +2,64 @@
  * SYST 17796 Project Base code.
  * Students can modify and extend to implement their game.
  * Add your name as an author and the date!
- */
-package ca.sheridancollege.project;
+ */package ca.sheridancollege.project;
 
-import java.util.ArrayList;
 
-/**
- * The class that models your game. You should create a more specific child of this class and instantiate the methods
- * given.
- *
- * @author dancye
- * @author Paul Bonenfant Jan 2020
- */
-public abstract class Game {
+import java.util.Scanner;
 
-    private final String name;//the title of the game
-    private ArrayList<Player> players;// the players of the game
+public class Game {
+    private Player player1;
+    private Player player2;
+    private GroupOfCards deck;
+    private int wins = 0;
+    private int losses = 0;
 
-    public Game(String name) {
-        this.name = name;
-        players = new ArrayList();
+    public Game() {
+        deck = new GroupOfCards(52);
     }
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
+    public void playGame() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Player 1's name: ");
+        player1 = new Player(scanner.next(), deck);
+        System.out.print("Enter Player 2's name: ");
+        player2 = new Player(scanner.next(), deck);
+
+        boolean continuePlaying = true;
+        while (continuePlaying) {
+            // Example play sequence
+            player1.playTurn(player2);
+            player2.playTurn(player1);
+            
+            
+            // Check for end game condition
+            if (gameOver()) {
+                System.out.println("Game over! Do you want to play again? (yes/no)");
+                if (scanner.next().equalsIgnoreCase("no")) {
+                    continuePlaying = false;
+                    System.out.println("Wins: " + wins + " Losses: " + losses);
+                }
+                // Reset game state if continuing
+                else {
+                    deck = new GroupOfCards(52);
+                   player1.reset(deck);
+                    player2.reset(deck);
+                }
+            }
+        }
+    }
+public void announceWinner(Player winner, Player loser) {
+    System.out.println(winner.getName() + ", congratulations! You win!");
+    System.out.println(loser.getName() + ", better luck next time!");
+}
+
+    private boolean gameOver() {
+        // Implement game over logic (e.g., no cards left)
+        return false;
     }
 
-    /**
-     * @return the players of this game
-     */
-    public ArrayList<Player> getPlayers() {
-        return players;
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.playGame();
     }
-
-    /**
-     * @param players the players of this game
-     */
-    public void setPlayers(ArrayList<Player> players) {
-        this.players = players;
-    }
-
-    /**
-     * Play the game. This might be one method or many method calls depending on your game.
-     */
-    public abstract void play();
-
-    /**
-     * When the game is over, use this method to declare and display a winning player.
-     */
-    public abstract void declareWinner();
-
-}//end class
+}
